@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block jumbotron %}
+        <hr class="my-4"/>
+        <p class="lead">
+            Fill out the information below to get updates when the number of available seats changes for your course.
+            <br/>
+            Alerts will stop approximately 2 weeks after the first day of classes.
+        </p>
+{% endblock %}
+
+{% block body %}
+    <form method="post" novalidate="novalidate">
+        {% csrf_token %}
+        {% include 'includes/form.html' %}
+        <button type="submit" class="btn btn-success">Begin Monitoring</button>
+    </form>
+{% endblock %}
