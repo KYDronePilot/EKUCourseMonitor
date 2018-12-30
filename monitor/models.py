@@ -49,6 +49,10 @@ class Course(models.Model):
     year = models.PositiveSmallIntegerField(choices=years(), default=datetime.date.today().year)
     # Whether or not the associated emails should be alerted of the server's new IP next semester.
     future_alert = models.BooleanField(default=True)
+    # Is there an active monitor thread.
+    thread_active = models.BooleanField(default=False, blank=True)
+    # Whether this course should be monitored.
+    is_monitored = models.BooleanField(default=True, blank=True)
 
     @property
     def url(self):
