@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block jumbotron %}
+        <hr class="my-4"/>
+        <p class="lead">
+            Enter your deactivation code to stop alerts from being sent to your email address.
+        </p>
+{% endblock %}
+
+{% block body %}
+    <form method="post" novalidate="novalidate">
+        {% csrf_token %}
+        {% include 'includes/form.html' %}
+        <button type="submit" class="btn btn-danger">Deactivate</button>
+    </form>
+{% endblock %}
