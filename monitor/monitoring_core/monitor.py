@@ -43,16 +43,24 @@ class Monitor:
         Args:
             course (Course): The course to be monitored.
 
+        Returns:
+            True if a worker was created, False if not.
+
         """
-        emails = list(course.emails.all())
+        emails = course.emails.filter(deactivated=False)
+        # If none, do not monitor.
+        if not emails:
+            return False
+        addrs = emails.values_list('email', flat=True)
         worker = SeatingTracker(
             course.id,
             course.url,
             course.name,
-            *emails
+            *addrs
         )
         worker.start()
         self.workers.append(worker)
+        return True
 
     @staticmethod
     def close_workers(workers):
@@ -84,10 +92,13 @@ class Monitor:
         )
         if not new_courses:
             return False
-        # Set them to have active threads.
         for course in new_courses:
+            # Set them to have active threads.
             course.thread_active = True
             course.save()
+            # Welcome the emails associated with this course.
+            for email in course.emails.all():
+                email.welcome_if_new()
         # Create workers for each one.
         for course in new_courses:
             self.new_worker(course)
