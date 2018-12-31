@@ -133,14 +133,15 @@ class Email(models.Model):
 
     def save(self, *args, **kwargs):
         """
-        Generate a deactivation code before saving.
+        Generate a deactivation code before saving if one not already set.
 
         Args:
             *args: Args for save function.
             **kwargs: KW args for save function.
 
         """
-        self.deactivation_code = self.get_deactivation_code()
+        if not self.deactivation_code:
+            self.deactivation_code = self.get_deactivation_code()
         super().save(*args, **kwargs)
 
     @staticmethod
