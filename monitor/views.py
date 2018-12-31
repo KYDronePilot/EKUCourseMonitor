@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic.base import View
-from .forms import NewMonitoredCourse
+from .forms import NewMonitoredCourse, DeactivateEmail
 from .models import Email
-from monitor.monitoring_core.monitor_daemon import CHANGE_FILE
 
 
 # For gathering monitoring information from the user.
@@ -31,14 +30,83 @@ class CourseForm(View):
                     email=email,
                     course=course
                 )
-            # Signify to monitoring daemon that the database has changed by creating the change file.
-            open(CHANGE_FILE, 'a').close()
             # Redirect to thank you page.
             return redirect('thank_you_page')
         # Otherwise, render the bound form with errors.
         return render(request, 'home.html', {'form': form})
 
 
+class DeactivationForm(View):
+    """
+    Deactivation form to remove an email from monitoring.
+
+    """
+    @staticmethod
+    def get(request):
+        """
+        Create an empty form.
+
+        Args:
+            request: Request data.
+
+        Returns: Response with empty form.
+
+        """
+        form = DeactivateEmail()
+        return render(
+            request,
+            'deactivate.html',
+            {'form': form}
+        )
+
+    @staticmethod
+    def post(request):
+        """
+
+        Args:
+            request: Request data.
+
+        Returns: Redirect to confirmation page or form errors.
+
+        """
+        form = DeactivateEmail(request.POST)
+        if form.is_valid():
+            # Grab the address and deactivate each email.
+            emails = Email.objects.filter(
+                deactivation_code=form.code
+            )
+            addr = emails[0].email
+            for email in emails:
+                email.deactivated = True
+                email.save()
+            # Show user a confirmation.
+            return redirect('deactivation_confirmation', addr)
+        # Else, handle form errors.
+        return render(
+            request,
+            'deactivate.html',
+            {'form': form}
+        )
+
+
 # Thanks you page, to be displayed after the user has filled out a form.
 def thank_you_page(request):
     return render(request, 'thank_you_page.html')
+
+
+def deactivation_confirmation(request, addr):
+    """
+    Deactivation confirmation page.
+
+    Args:
+        request: Request data.
+        addr (str): Email address deactivated.
+
+    Returns: Response with the address that was removed.
+
+    """
+    return render(
+        request,
+        'deactivation_confirmation.html',
+        {'addr': addr}
+    )
