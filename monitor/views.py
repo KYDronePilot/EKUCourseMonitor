@@ -7,13 +7,15 @@ from .models import Email
 # For gathering monitoring information from the user.
 class CourseForm(View):
     # Handle GET requests (return an empty form).
-    def get(self, request):
+    @staticmethod
+    def get(request):
         # Create a new NewMonitoredCourse form.
         form = NewMonitoredCourse()
         return render(request, 'home.html', {'form': form})
 
     # Handle POST requests (process the form).
-    def post(self, request):
+    @staticmethod
+    def post(request):
         # Create a filled out form from the request.
         form = NewMonitoredCourse(request.POST)
         # If the form is valid, process the data and save it.
@@ -73,7 +75,7 @@ class DeactivationForm(View):
         if form.is_valid():
             # Grab the address and deactivate each email.
             emails = Email.objects.filter(
-                deactivation_code=form.code
+                deactivation_code=form.cleaned_data.get('code')
             )
             addr = emails[0].email
             for email in emails:

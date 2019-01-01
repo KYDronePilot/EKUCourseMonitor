@@ -33,7 +33,7 @@ class DeactivateEmail(forms.Form):
     """
     code = forms.CharField(
         max_length=20,
-        label='Deactivation Email'
+        label='Deactivation Code'
     )
 
     def clean(self):

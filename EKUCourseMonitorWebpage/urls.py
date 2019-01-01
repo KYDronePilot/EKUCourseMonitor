@@ -22,6 +22,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', CourseForm.as_view(), name='new_course_form'),
     path('thank-you-page/', thank_you_page, name='thank_you_page'),
-    path('deactivation/', DeactivationForm.as_view(), name='deactivation'),
-    path('deactivation-conformation', deactivation_confirmation, name='deactivation_confirmation'),
+    path('deactivate/', DeactivationForm.as_view(), name='deactivation'),
+    path(
+        'deactivation-confirmation/<addr>/',
+        deactivation_confirmation,
+        name='deactivation_confirmation'
+    ),
 ]
