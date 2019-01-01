@@ -1,7 +1,7 @@
 """
 Base monitoring script. Continually checks the DB for new courses to monitor
-and adds threads for each one. Also removes threads for courses that are no
-longer in the DB.
+and adds threads for each one. Also removes threads for courses that have
+been deactivated.
 
 """
 import time
@@ -15,7 +15,7 @@ class Monitor:
     Main class for performing monitoring tasks.
 
     Attributes:
-        workers (list): List of active monitor threads.
+        workers (list): List of active monitoring threads.
 
     """
     # Timeout between scanning.
@@ -36,21 +36,16 @@ class Monitor:
         for course in active_course_threads:
             self.new_worker(course)
 
-    def new_worker(self, course):
+    def new_worker(self, course, new=False):
         """
         Create new monitor thread for a course.
 
         Args:
             course (Course): The course to be monitored.
-
-        Returns:
-            True if a worker was created, False if not.
+            new (boolean): Whether or not this is the first time this course is being monitored.
 
         """
-        emails = course.emails.filter(deactivated=False)
-        # If none, do not monitor.
-        if not emails:
-            return False
+        emails = course.emails.all()
         addrs = emails.values_list('email', flat=True)
         worker = SeatingTracker(
             course.id,
@@ -58,9 +53,11 @@ class Monitor:
             course.name,
             *addrs
         )
+        # Send out an initial alert if this is the first time monitoring this course.
+        if new:
+            worker.initial_alert()
         worker.start()
         self.workers.append(worker)
-        return True
 
     @staticmethod
     def close_workers(workers):
@@ -99,16 +96,15 @@ class Monitor:
             # Welcome the emails associated with this course.
             for email in course.emails.all():
                 email.welcome_if_new()
-        # Create workers for each one.
-        for course in new_courses:
-            self.new_worker(course)
+            # Create worker for this course.
+            self.new_worker(course, new=True)
         return True
 
     def close_deactivated_courses(self):
         """
         Stop monitoring any deactivated courses.
 
-        Returns: True if any were found, False if not.
+        Returns: True if any were found and deactivated, False if not.
 
         """
         deactivated_courses = Course.objects.filter(
@@ -151,3 +147,8 @@ class Monitor:
         self.close_workers(self.workers)
         time.sleep(0.1)
         exit()
+
+
+if __name__ == '__main__':
+    monitor = Monitor()
+    monitor.scan()

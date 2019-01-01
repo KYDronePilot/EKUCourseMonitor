@@ -8,14 +8,11 @@
     {% block stylesheet %}{% endblock %}
 </head>
 <body>
-<div class="container">
+<div class="container my-5">
     <div class="jumbotron py-3">
         <h1 class="display-4">EKU Course Monitor</h1>
         {% block jumbotron %}
         {% endblock %}
-        <small><a href="{% url 'new_course_form' %}" class="text-muted">Home</a></small>
-        <span class="text-muted">|</span>
-        <small><a href="{% url 'deactivation' %}" class="text-muted">Deactivate Email</a></small>
     </div>
     {% block body %}
     {% endblock body %}

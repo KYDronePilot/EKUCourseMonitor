@@ -16,16 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from monitor.views import CourseForm, thank_you_page
-from monitor.views import DeactivationForm, deactivation_confirmation
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', CourseForm.as_view(), name='new_course_form'),
-    path('thank-you-page/', thank_you_page, name='thank_you_page'),
-    path('deactivate/', DeactivationForm.as_view(), name='deactivation'),
-    path(
-        'deactivation-confirmation/<addr>/',
-        deactivation_confirmation,
-        name='deactivation_confirmation'
-    ),
+    path('thank-you-page/', thank_you_page, name='thank_you_page')
 ]
