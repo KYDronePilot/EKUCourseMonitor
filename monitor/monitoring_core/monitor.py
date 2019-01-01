@@ -97,7 +97,10 @@ class Monitor:
             course.thread_active = True
             course.save()
             # Welcome the emails associated with this course.
-            for email in course.emails.all():
+            emails = course.emails.filter(
+                deactivated=False
+            )
+            for email in emails:
                 email.welcome_if_new()
         # Create workers for each one.
         for course in new_courses:

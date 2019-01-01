@@ -126,6 +126,8 @@ class Email(models.Model):
     deactivation_code = models.CharField(max_length=20, null=True, blank=True)
     # Whether the email has been deactivated.
     deactivated = models.BooleanField(default=False)
+    # Whether this email is being actively alerted.
+    alerted = models.BooleanField(default=False)
 
     # For debugging.
     def __str__(self):
