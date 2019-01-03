@@ -1,9 +1,17 @@
-FROM ubuntu:latest
+FROM python:3.6
 
-WORKDIR /usr/src/code
+ENV PYTHONUNBUFFERED 1
 
-COPY . .
+RUN mkdir /config /logs
 
-RUN /bin/bash setup.sh
+ADD config/requirements.pip /config
 
-EXPOSE 8080
+ADD config/web/gunicorn_start /run
+
+ADD config/setup.sh /run
+
+RUN pip install -r /config/requirements.pip
+
+RUN mkdir /src
+
+WORKDIR /src
