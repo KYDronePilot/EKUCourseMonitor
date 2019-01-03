@@ -13,8 +13,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "EKUCourseMonitorWebpage.setting
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from monitor.models import Course
-from monitor.monitoring_core.seat_tracker import SeatingTracker
+from EKUCourseMonitorWebpage.monitor.models import Course
+from EKUCourseMonitorWebpage.monitor.monitoring_core.seat_tracker import SeatingTracker
 
 
 class Monitor:
