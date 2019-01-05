@@ -4,8 +4,8 @@ upstream app_server {
 }
 
 server {
-    listen 8000;
-    server_name ***.***.***.***;  # here can also be the IP address of the server
+    listen 80;
+    server_name <hostname/IP>;
 
     keepalive_timeout 5;
     client_max_body_size 4G;

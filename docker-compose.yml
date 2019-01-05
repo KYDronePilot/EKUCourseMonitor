@@ -1,12 +1,11 @@
-version: '2'
+version: "2"
 services:
   nginx:
     image: nginx:latest
     container_name: ngx01
     ports:
-      - '8000:8000'
+      - "80:80"
     volumes:
-      - ./EKUCourseMoniorWebpage:/src
       - ./config/nginx:/etc/nginx/conf.d
       - ./EKUCourseMonitorWebpage/static:/static
     depends_on:

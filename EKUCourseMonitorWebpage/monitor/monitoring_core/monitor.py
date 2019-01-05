@@ -96,10 +96,9 @@ class Monitor:
         )
         if not new_courses:
             return False
+        # Set them to have active threads.
+        new_courses.update(thread_active=True)
         for course in new_courses:
-            # Set them to have active threads.
-            course.thread_active = True
-            course.save()
             # Welcome the emails associated with this course.
             for email in course.emails.all():
                 email.welcome_if_new()
@@ -120,12 +119,10 @@ class Monitor:
         )
         if not deactivated_courses:
             return False
-        deactivated_courses = list(deactivated_courses)
         # Set course thread status to deactivated.
-        for course in deactivated_courses:
-            course.thread_active = False
-            course.save()
+        deactivated_courses.update(thread_active=False)
         # Close workers and remove from worker list.
+        deactivated_courses = list(deactivated_courses)
         self.close_workers(deactivated_courses)
         for worker in deactivated_courses:
             self.workers.remove(worker)

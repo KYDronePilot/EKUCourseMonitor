@@ -146,6 +146,7 @@ class Email(models.Model):
         server_ssl.close()
         # Signify that welcome email was sent.
         self.welcomed = True
+        self.save()
 
     def welcome_if_new(self):
         """
@@ -155,9 +156,11 @@ class Email(models.Model):
 
         """
         same_emails = Email.objects.filter(email=self.email, welcomed=True)
-        # If already exits and welcomed, set welcomed and exit.
+        # If already exists and welcomed, set welcomed and exit.
         if same_emails:
             self.welcomed = True
+            self.save()
             return False
         # Else, welcome.
         self.welcome()
+        return True
