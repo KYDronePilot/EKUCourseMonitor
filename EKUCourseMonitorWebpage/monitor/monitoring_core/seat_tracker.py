@@ -88,8 +88,8 @@ class SeatingTracker(threading.Thread):
         self.capacity = SeatingValue()
         self.actual = SeatingValue()
         self.remaining = SeatingValue()
-        # Send out an initial alert.
-        self.initial_alert()
+        # Update the seating initially.
+        self.update_seating()
 
     def update_seating(self):
         """

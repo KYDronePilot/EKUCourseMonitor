@@ -3,6 +3,7 @@ import smtplib
 from decouple import config
 
 from django.db import models
+from .monitoring_core.url import URL
 
 # Gmail authentication information.
 GMAIL_USERNAME = config('GMAIL_USERNAME')
@@ -85,23 +86,12 @@ class Course(models.Model):
     @property
     def url(self):
         """
-        Get the URL for the course. Works by,
-         - incrementing the year if fall or winter (how EKU's system works)
-         - getting the proper semester code
-         - formatting the URL
+        Get the URL for the course.
 
         Returns: The course URL for monitoring.
 
         """
-        year = self.year
-        if self.semester == Course.FALL or self.semester == Course.WINTER:
-            year += 1
-        semester_code = Course.SEMESTER_CODES[self.semester]
-        url = Course.BASE_URL.format(
-            year=year,
-            semester_code=semester_code,
-            crn=self.crn
-        )
+        url = URL.get_url(self.year, self.semester, self.crn)
         return url
 
     def __str__(self):

@@ -4,17 +4,19 @@ and adds threads for each one. Also removes threads for courses that have
 been deactivated.
 
 """
-import time
-import sys
 import os
+import signal
+import sys
+import time
 
-sys.path.insert(0, '../../')
+
+sys.path.insert(0, '/Users/mikegalliers/Documents/repos/EKUCourseMonitor/EKUCourseMonitorWebpage')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "EKUCourseMonitorWebpage.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-from EKUCourseMonitorWebpage.monitor.models import Course
-from EKUCourseMonitorWebpage.monitor.monitoring_core.seat_tracker import SeatingTracker
+from monitor.models import Course
+from monitor.monitoring_core.seat_tracker import SeatingTracker
 
 
 class Monitor:
@@ -32,6 +34,9 @@ class Monitor:
         self.workers = []
         # Start threads for courses that should have them.
         self.initialize()
+        # Set signal handler for script.
+        signal.signal(signal.SIGTERM, self.catch)
+        signal.signal(signal.SIGHUP, self.catch)
 
     def initialize(self):
         """
@@ -135,10 +140,14 @@ class Monitor:
         scanning again.
 
         """
-        while True:
-            self.setup_new_courses()
-            self.close_deactivated_courses()
-            time.sleep(Monitor.TIMEOUT)
+        try:
+            while True:
+                self.setup_new_courses()
+                self.close_deactivated_courses()
+                time.sleep(Monitor.TIMEOUT)
+        # Shut down threads on interrupt.
+        except KeyboardInterrupt:
+            self.close_workers(self.workers)
 
     def catch(self, signum, frame):
         """
