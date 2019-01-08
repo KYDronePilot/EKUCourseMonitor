@@ -27,8 +27,8 @@ server {
     }
 
     # Certs
-    ssl_certificate /certs/<host.domain>/fullchain.pem;
-    ssl_certificate_key /certs/<host.domain>/privkey.pem;
+    ssl_certificate /certs/fullchain.pem;
+    ssl_certificate_key /certs/privkey.pem;
     include /cert_params/options-ssl-nginx.conf;
     ssl_dhparam /cert_params/ssl-dhparams.pem;
 }

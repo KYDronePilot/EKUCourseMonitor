@@ -1,5 +1,11 @@
 FROM ubuntu:latest
 
+# FQDN of the server.
+ENV FQDN <host.domain>
+
+# Email used with certbot.
+ENV EMAIL <user@example.com>
+
 # Install certbot.
 RUN apt-get update && \
     apt-get install software-properties-common -y && \

@@ -6,15 +6,15 @@ if find "/certs" ! -iname ".*" -mindepth 1 -print -quit 2>/dev/null | grep -q .;
     certbot renew
 # Else, get a new cert.
 else
-    certbot certonly --standalone -m mikegalliers@gmail.com --agree-tos -n -d docker3.galliers.org
+    certbot certonly --standalone -m ${EMAIL} --agree-tos -n -d ${FQDN}
 fi
 
 # Remove any old certs.
 rm -f /certs/*
 
 # Copy certs to certs dir.
-cd /etc/letsencrypt/live/docker3.galliers.org
-for f in $(find /etc/letsencrypt/live/docker3.galliers.org -type l); do cp $(readlink ${f}) /certs; done;
+cd /etc/letsencrypt/live/${FQDN}
+for f in $(find /etc/letsencrypt/live/${FQDN} -type l); do cp $(readlink ${f}) /certs; done;
 
 # Change names of certs to be consistent.
 cd /certs
