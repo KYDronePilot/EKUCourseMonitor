@@ -5,12 +5,15 @@ been deactivated.
 
 """
 import os
+import os.path
 import signal
 import sys
 import time
 
 
-sys.path.insert(0, '/Users/mikegalliers/Documents/repos/EKUCourseMonitor/EKUCourseMonitorWebpage')
+# Allow script to access Django models.
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+sys.path.insert(0, path)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "EKUCourseMonitorWebpage.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
@@ -47,6 +50,8 @@ class Monitor:
         active_course_threads = Course.objects.filter(thread_active=True)
         for course in active_course_threads:
             self.new_worker(course)
+            # Logging.
+            print('Initialized worker for: {0}'.format(course))
 
     def new_worker(self, course, new=False):
         """
@@ -70,6 +75,7 @@ class Monitor:
             worker.initial_alert()
         worker.start()
         self.workers.append(worker)
+        print('New worker for {0} activated.'.format(course))
 
     @staticmethod
     def close_workers(workers):
@@ -101,14 +107,15 @@ class Monitor:
         )
         if not new_courses:
             return False
-        # Set them to have active threads.
-        new_courses.update(thread_active=True)
         for course in new_courses:
             # Welcome the emails associated with this course.
             for email in course.emails.all():
                 email.welcome_if_new()
             # Create worker for this course.
             self.new_worker(course, new=True)
+            print('New course {0} set up.'.format(course))
+        # Set them to have active threads.
+        new_courses.update(thread_active=True)
         return True
 
     def close_deactivated_courses(self):
@@ -124,13 +131,16 @@ class Monitor:
         )
         if not deactivated_courses:
             return False
+        # Logging.
+        for course in deactivated_courses:
+            print('Deactivated worker for: {0}'.format(course))
+        # Close workers and remove from worker list.
+        for course in deactivated_courses:
+            worker = [worker for worker in self.workers if worker.pk == course.pk]
+            self.close_workers(worker)
+            self.workers.remove(worker[0])
         # Set course thread status to deactivated.
         deactivated_courses.update(thread_active=False)
-        # Close workers and remove from worker list.
-        deactivated_courses = list(deactivated_courses)
-        self.close_workers(deactivated_courses)
-        for worker in deactivated_courses:
-            self.workers.remove(worker)
         return True
 
     def scan(self):

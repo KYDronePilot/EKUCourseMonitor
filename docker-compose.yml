@@ -4,22 +4,27 @@ services:
     image: nginx:latest
     container_name: ngx01
     ports:
+      - "443:443"
       - "80:80"
     volumes:
       - ./config/nginx:/etc/nginx/conf.d
-      - ./EKUCourseMonitorWebpage/static:/static
+      - static:/static
+      - ./certbot/certs:/certs
+      - ./certbot/cert_params:/cert_params
     depends_on:
       - web
   web:
     build: .
     container_name: dg01
-    command: "/bin/bash /run/setup.sh"
+    command: "/bin/bash /run/run.sh"
     depends_on:
       - db
     volumes:
-      - ./EKUCourseMonitorWebpage:/src
+      - static:/static
     expose:
       - "8000"
   db:
     image: postgres:latest
     container_name: ps01
+volumes:
+  static:

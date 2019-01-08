@@ -4,8 +4,8 @@ upstream app_server {
 }
 
 server {
-    listen 80;
-    server_name <hostname/IP>;
+    listen 443 ssl;
+    server_name <host.domain>;
 
     keepalive_timeout 5;
     client_max_body_size 4G;
@@ -25,4 +25,20 @@ server {
       proxy_redirect off;
       proxy_pass http://app_server;
     }
+
+    # Certs
+    ssl_certificate /certs/<host.domain>/fullchain.pem;
+    ssl_certificate_key /certs/<host.domain>/privkey.pem;
+    include /cert_params/options-ssl-nginx.conf;
+    ssl_dhparam /cert_params/ssl-dhparams.pem;
+}
+
+server {
+    if ($host = <host.domain>) {
+        return 301 https://$host$request_uri;
+    }
+
+    listen 80;
+    server_name <host.domain>
+    return 404;
 }
