@@ -1,8 +1,9 @@
-version: "2"
+version: "3"
 services:
   nginx:
     image: nginx:latest
     container_name: ngx01
+    restart: always
     ports:
       - "443:443"
       - "80:80"
@@ -17,6 +18,7 @@ services:
     build: .
     container_name: dg01
     command: "/bin/bash /run/run.sh"
+    restart: always
     depends_on:
       - db
     volumes:
@@ -26,5 +28,6 @@ services:
   db:
     image: postgres:latest
     container_name: ps01
+    restart: always
 volumes:
   static:
