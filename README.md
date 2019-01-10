@@ -71,7 +71,21 @@ cd certbot
 ./renew.sh
 ```
 
+Set timezone on the host machine.
+```bash
+echo "America/Kentucky/Louisville" > /etc/timezone
+unlink /etc/localtime
+dpkg-reconfigure -f noninteractive tzdata
+```
+
 Add a cron job to try renewing the cert every week.
 ```
 0 4 * * 0 /bin/bash <absolute path>/renew.sh
 ```
+
+Compose the project (run twice first time).
+```bash
+docker-compose up
+```
+
+Everything should now be working!
