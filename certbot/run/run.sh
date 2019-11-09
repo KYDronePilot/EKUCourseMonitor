@@ -35,5 +35,5 @@ fi
 # Get cert params from certbot.
 cd /cert_params
 rm -f *
-wget https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/options-ssl-nginx.conf
+wget https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/tls_configs/options-ssl-nginx.conf
 wget https://raw.githubusercontent.com/certbot/certbot/master/certbot/ssl-dhparams.pem
